@@ -1,5 +1,5 @@
 # mamgal - a program for creating static image galleries
-# Copyright 2007-2009 Marcin Owsiany <marcin@owsiany.pl>
+# Copyright 2007-2010 Marcin Owsiany <marcin@owsiany.pl>
 # See the README file for license information
 # The picture encapsulating class
 package App::MaMGal::Entry::Picture;
@@ -7,37 +7,28 @@ use strict;
 use warnings;
 use base 'App::MaMGal::Entry';
 use Carp;
-use File::stat;
 use App::MaMGal::Exceptions;
 
 sub make
 {
 	my $self = shift;
-	return ($self->refresh_scaled_pictures, $self->refresh_slide);
+	my %opts = @_;
+	my $force_slide = $opts{force_slide} || 0;
+	return ($self->refresh_scaled_pictures, $self->refresh_slide($force_slide));
 }
 
 sub refresh_slide
 {
 	my $self = shift;
+	my $force = shift;
 	my $tools = $self->tools or croak "Tools were not injected";
 	my $formatter = $tools->{formatter} or croak "Formatter required";
 	ref $formatter and $formatter->isa('App::MaMGal::Formatter') or croak "Arg is not a formatter";
 
 	$self->container->ensure_subdir_exists($self->slides_dir);
 	my $name = $self->{dir_name}.'/'.$self->page_path;
-	$self->container->_write_contents_to(sub { $formatter->format_slide($self) }, $self->page_path) unless $self->fresher_than_me($name);
+	$self->container->_write_contents_to(sub { $formatter->format_slide($self) }, $self->page_path) unless ($self->fresher_than_me($name) and not $force);
 	return $self->page_path;
-}
-
-sub fresher_than_me
-{
-	my $self = shift;
-	my $name = shift;
-	if (-e $name) {
-		my $stat = stat($name) or App::MaMGal::SystemException->throw(message => '%s: metadata read (stat) failed: %s', objects => [$name, $!]);
-		return 1 if $stat->mtime > $self->{stat}->mtime;
-	}
-	return 0;
 }
 
 sub refresh_miniatures

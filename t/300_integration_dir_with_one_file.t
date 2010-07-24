@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # mamgal - a program for creating static image galleries
-# Copyright 2007-2009 Marcin Owsiany <marcin@owsiany.pl>
+# Copyright 2007-2010 Marcin Owsiany <marcin@owsiany.pl>
 # See the README file for license information
 use strict;
 use warnings;
@@ -54,7 +54,7 @@ dir_only_contains_ok('td/one_pic', [qw(a1.png)],                "Only the pictur
 
 lives_ok(sub { $d->make },				"dir makes stuff and survives");
 
-dir_only_contains_ok('td/one_pic', [qw(.mamgal-medium .mamgal-thumbnails .mamgal-slides index.html .mamgal-index.png .mamgal-style.css
+dir_only_contains_ok('td/one_pic', [qw(.mamgal-medium .mamgal-thumbnails .mamgal-slides index.html .mamgal-index.png
 					a1.png
 					.mamgal-thumbnails/a1.png
 					.mamgal-medium/a1.png

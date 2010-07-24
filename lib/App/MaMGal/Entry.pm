@@ -1,5 +1,5 @@
 # mamgal - a program for creating static image galleries
-# Copyright 2007-2009 Marcin Owsiany <marcin@owsiany.pl>
+# Copyright 2007-2010 Marcin Owsiany <marcin@owsiany.pl>
 # See the README file for license information
 # Any interesting entry (picture or subdirectory)
 package App::MaMGal::Entry;
@@ -93,6 +93,22 @@ sub creation_time
 	return undef unless $stat;
 	# We need to use st_mtime, for lack of anything better
 	return $stat->mtime;
+}
+
+sub content_modification_time
+{
+	my $self = shift;
+	return $self->App::MaMGal::Entry::creation_time(@_);
+}
+
+sub fresher_than_me
+{
+	my $self = shift;
+	my $path = shift;
+	my %opts = @_;
+	my $stat = stat($path) or return 0;
+	return 1 if $stat->mtime >= $self->content_modification_time(%opts);
+	return 0;
 }
 
 # Whether this entry should be shown in a directory contents montage
